@@ -58,6 +58,9 @@ sudo apt-add-repository ppa:ansible/ansible -y
 sudo apt-get update
 sudo apt-get install -y docker.io ansible
 
+# NTP client
+sudo apt-get install -y ntp
+
 # Install Kolla
 cd ~
 git clone https://github.com/openstack/kolla -b $KOLLA_BRANCH
