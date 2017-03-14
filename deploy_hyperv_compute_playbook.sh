@@ -13,6 +13,9 @@ KEYSTONE_URL_V2="http://$CONTROLLER_ADDR:35357/v2.0"
 
 MGMT_IP=$(sudo ip addr show eth0 | sed -n 's/^\s*inet \([0-9.]*\).*$/\1/p')
 
+# Needed by Ansible for Windows hosts
+sudo pip install "pywinrm>=0.2.2"
+
 sudo ansible-playbook -i hyperv_inventory hyperv-compute.yml \
 --extra-vars="glance_host=$CONTROLLER_ADDR neutron_host=$CONTROLLER_ADDR neutron_keystone_password=$NEUTRON_KEYSTONE_PASSWORD \
 keystone_url=$KEYSTONE_URL rabbitmq_host=$MGMT_IP rabbitmq_password=$RABBITMQ_PASSWORD vswitch_name=$VSWITCH_NAME \
