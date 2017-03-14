@@ -1,0 +1,10 @@
+[hyperv]
+hyperv-host
+
+[hyperv:vars]
+ansible_user=admin
+ansible_password=Passw0rd
+ansible_port=5986
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+

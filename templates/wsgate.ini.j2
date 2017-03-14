@@ -1,0 +1,21 @@
+[global]
+debug=false
+redirect=false
+port=8000
+bindaddr=0.0.0.0
+[http]
+documentroot=C:\Program Files\Cloudbase Solutions\FreeRDP-WebConnect\WebRoot\
+[ssl]
+port=4430
+bindaddr=0.0.0.0
+certfile=C:\Program Files\Cloudbase Solutions\FreeRDP-WebConnect\etc\server.cer
+[rdpoverride]
+nofullwindowdrag=true
+[openstack]
+authurl={{ keystone_url_v2 }}
+tenantname=service
+username=nova
+password={{ nova_keystone_password }}
+[hyperv]
+hostusername={{ hyperv_username }}
+hostpassword={{ hyperv_password }}

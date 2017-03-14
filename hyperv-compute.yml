@@ -1,0 +1,73 @@
+---
+- name: Install Nova compute driver and FreeRDP on Hyper-V
+  hosts: hyperv
+  vars:
+    temp_dir: 'c:\ansible_temp'
+    base_download_url: 'https://cloudbase.it/downloads'
+    hyperv_compute_msi: 'HyperVNovaCompute_Newton_14_0_1.msi'
+    freerdp_webconnect_msi: 'FreeRDPWebConnect.msi'
+    nova_conf_path: 'C:\Program Files\Cloudbase Solutions\OpenStack\Nova\etc\nova.conf'
+    neutron_hyperv_agent_conf_path: 'C:\Program Files\Cloudbase Solutions\OpenStack\Nova\etc\neutron_hyperv_agent.conf'
+    wsgate_ini_path: 'C:\Program Files\Cloudbase Solutions\FreeRDP-WebConnect\etc\wsgate.ini'
+  tasks:
+    - name: Test temporary download directory
+      win_stat: path="{{temp_dir}}"
+      register: stat_temp_dir
+
+    - name: Create temporary download directory
+      win_command: "mkdir {{temp_dir}}"
+      when: not stat_temp_dir.stat.exists
+
+    - name: Download the Nova MSI
+      win_get_url:
+        url: "{{ base_download_url }}/{{ hyperv_compute_msi }}"
+        dest: "{{ temp_dir }}\\{{ hyperv_compute_msi }}"
+
+    - name: Install the Compute MSI
+      win_package:
+        path: "{{ temp_dir }}\\{{ hyperv_compute_msi }}"
+        product_id: '{520321AD-664C-49A1-A8CE-FAFB3C67FBF7}'
+
+    - name: Configure nova-compute
+      win_template:
+        src: templates/nova.conf.j2
+        dest: "{{ nova_conf_path }}"
+
+    - name: Restart nova-compute
+      win_service:
+        name: nova-compute
+        state: restarted
+
+    - name: Configure neutron-hyperv-agent
+      win_template:
+        src: templates/neutron_hyperv_agent.conf.j2
+        dest: "{{ neutron_hyperv_agent_conf_path }}"
+
+    - name: Restart neutron-hyperv-agent
+      win_service:
+        name: neutron-hyperv-agent
+        state: restarted
+
+    - name: Download the FreeRDP-WebConnect MSI
+      win_get_url:
+        url: "{{ base_download_url }}/{{ freerdp_webconnect_msi }}"
+        dest: "{{ temp_dir }}\\{{ freerdp_webconnect_msi }}"
+
+    - name: Install the FreeRDP-WebConnect MSI
+      win_package:
+        path: "{{ temp_dir }}\\{{ freerdp_webconnect_msi }}"
+        product_id: '{0935139D-41F6-40C1-A8C5-218DD93F8C76}'
+
+    - name: Configure FreeRDP-WebConnect
+      win_template:
+        src: templates/wsgate.ini.j2
+        dest: "{{ wsgate_ini_path }}"
+
+    - name: Restart FreeRDP-WebConnect
+      win_service:
+        name: wsgate
+        state: restarted
+
+    - name: Remove temporary download directory
+      win_command: "cmd /c rmdir /s /q {{temp_dir}}"
+

@@ -1,0 +1,53 @@
+[DEFAULT]
+auth_strategy=keystone
+image_service=nova.image.glance.GlanceImageService
+compute_driver=compute_hyperv.driver.HyperVDriver
+network_api_class=nova.network.neutronv2.api.API
+volume_api_class=nova.volume.cinder.API
+instances_path=C:\OpenStack\Instances
+use_cow_images=true
+flat_injected=true
+policy_file=C:\Program Files\Cloudbase Solutions\OpenStack\Nova\etc\policy.json
+mkisofs_cmd=C:\Program Files\Cloudbase Solutions\OpenStack\Nova\bin\mkisofs.exe
+verbose=true
+allow_resize_to_same_host=true
+running_deleted_instance_action=reap
+running_deleted_instance_poll_interval=120
+resize_confirm_window=5
+resume_guests_state_on_host_boot=true
+rpc_response_timeout=1800
+lock_path=C:\OpenStack\Log
+use_neutron=true
+vif_plugging_is_fatal=false
+vif_plugging_timeout=60
+rpc_backend=rabbit
+logdir=C:\OpenStack\Log
+logfile=nova-compute.log
+force_config_drive=True
+[glance]
+api_servers={{ glance_host }}:9292
+[hyperv]
+limit_cpu_features=false
+config_drive_inject_password=true
+qemu_img_cmd=C:\Program Files\Cloudbase Solutions\OpenStack\Nova\bin\qemu-img.exe
+config_drive_cdrom=true
+dynamic_memory_ratio=1
+enable_instance_metrics_collection=false
+[rdp]
+enabled=true
+html5_proxy_base_url=http://{{ ansible_fqdn }}:8000
+[neutron]
+url=http://{{ neutron_host }}:9696
+auth_strategy=keystone
+project_domain_name=Default
+project_name=service
+user_domain_name=Default
+username=neutron
+password={{ neutron_keystone_password }}
+auth_url={{ keystone_url }}
+auth_plugin=v3password
+[oslo_messaging_rabbit]
+rabbit_host={{ rabbitmq_host }}
+rabbit_port=5672
+rabbit_userid=openstack
+rabbit_password={{ rabbitmq_password }}
