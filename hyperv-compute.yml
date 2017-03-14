@@ -15,7 +15,7 @@
       register: stat_temp_dir
 
     - name: Create temporary download directory
-      win_command: "mkdir {{temp_dir}}"
+      win_command: "cmd /c mkdir {{temp_dir}}"
       when: not stat_temp_dir.stat.exists
 
     - name: Download the Nova MSI
