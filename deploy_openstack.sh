@@ -61,6 +61,9 @@ sudo apt-get install -y docker.io ansible
 # NTP client
 sudo apt-get install -y ntp
 
+# Remove lxd or lxc so it won't bother Docker
+sudo apt-get remove -y lxd lxc
+
 # Install Kolla
 cd ~
 git clone https://github.com/openstack/kolla -b $KOLLA_BRANCH
