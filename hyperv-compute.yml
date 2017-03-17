@@ -1,4 +1,5 @@
-me: Install Nova compute driver and FreeRDP on Hyper-V
+---
+- name: Install Nova compute driver and FreeRDP on Hyper-V
   hosts: hyperv
   vars:
     temp_dir: 'c:\ansible_temp'
