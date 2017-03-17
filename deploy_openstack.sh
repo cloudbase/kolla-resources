@@ -39,15 +39,15 @@ up ip link set \$IFACE promisc on
 down ip link set \$IFACE promisc off
 down ip link set \$IFACE down
 
-auto eth3
-iface eth3 inet manual
+auto eth2
+iface eth2 inet manual
 up ip link set \$IFACE up
 up ip link set \$IFACE promisc on
 down ip link set \$IFACE promisc off
 down ip link set \$IFACE down
 EOF
 
-for iface in eth0 eth1 eth3
+for iface in eth0 eth1 eth2
 do
     sudo ifdown $iface || true
     sudo ifup $iface
@@ -114,7 +114,7 @@ sudo kolla-ansible deploy -i kolla/ansible/inventory/all-in-one
 sudo kolla-ansible post-deploy -i kolla/ansible/inventory/all-in-one
 
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-br br-data
-sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data eth3
+sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data eth2
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data phy-br-data || true
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl set interface phy-br-data type=patch
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-int int-br-data || true
