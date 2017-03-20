@@ -39,15 +39,15 @@ up ip link set \$IFACE promisc on
 down ip link set \$IFACE promisc off
 down ip link set \$IFACE down
 
-auto eth3
-iface eth3 inet manual
+auto eth2
+iface eth2 inet manual
 up ip link set \$IFACE up
 up ip link set \$IFACE promisc on
 down ip link set \$IFACE promisc off
 down ip link set \$IFACE down
 EOF
 
-for iface in eth0 eth1 eth3
+for iface in eth0 eth1 eth2
 do
     sudo ifdown $iface || true
     sudo ifup $iface
@@ -60,6 +60,9 @@ sudo apt-get install -y docker.io ansible
 
 # NTP client
 sudo apt-get install -y ntp
+
+# Remove lxd or lxc so it won't bother Docker
+sudo apt-get remove -y lxd lxc
 
 # Install Kolla
 cd ~
@@ -90,10 +93,19 @@ sudo sed -i '/#neutron_external_interface/i neutron_external_interface: "eth1"' 
 
 sudo mkdir -p /etc/kolla/config/neutron
 
+# remove vxlan stuff
+sed -i '/ml2_type_vxlan/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/vni_ranges/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/vxlan_group/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/tunnel_types/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/l2_population/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/arp_responder/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/\[agent\]/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+
 sudo tee /etc/kolla/config/neutron/ml2_conf.ini <<-'EOF'
 [ml2]
-type_drivers = flat,vlan,vxlan
-tenant_network_types = vxlan,vlan
+type_drivers = flat,vlan
+tenant_network_types = flat,vlan
 mechanism_drivers = openvswitch,hyperv
 extension_drivers = port_security
 [ml2_type_vlan]
@@ -114,7 +126,7 @@ sudo kolla-ansible deploy -i kolla/ansible/inventory/all-in-one
 sudo kolla-ansible post-deploy -i kolla/ansible/inventory/all-in-one
 
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-br br-data
-sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data eth3
+sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data eth2
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-data phy-br-data || true
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl set interface phy-br-data type=patch
 sudo docker exec --privileged openvswitch_vswitchd ovs-vsctl add-port br-int int-br-data || true

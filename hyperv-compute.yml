@@ -3,6 +3,7 @@
   hosts: hyperv
   vars:
     temp_dir: 'c:\ansible_temp'
+    log_dir: 'c:\OpenStack\Log'
     base_download_url: 'https://cloudbase.it/downloads'
     hyperv_compute_msi: 'HyperVNovaCompute_Newton_14_0_1.msi'
     freerdp_webconnect_msi: 'FreeRDPWebConnect.msi'
@@ -14,9 +15,17 @@
       win_stat: path="{{temp_dir}}"
       register: stat_temp_dir
 
+    - name: Test log directory
+      win_stat: path="{{log_dir}}"
+      register: stat_log_dir
+
     - name: Create temporary download directory
       win_command: "cmd /c mkdir {{temp_dir}}"
       when: not stat_temp_dir.stat.exists
+
+    - name: Create log directory
+      win_command: "cmd /c mkdir {{log_dir}}"
+      when: not stat_log_dir.stat.exists
 
     - name: Download the Nova MSI
       win_get_url:
@@ -27,6 +36,7 @@
       win_package:
         path: "{{ temp_dir }}\\{{ hyperv_compute_msi }}"
         product_id: '{520321AD-664C-49A1-A8CE-FAFB3C67FBF7}'
+        arguments: "SKIPNOVACONF=0"
 
     - name: Configure nova-compute
       win_template:
@@ -70,4 +80,3 @@
 
     - name: Remove temporary download directory
       win_command: "cmd /c rmdir /s /q {{temp_dir}}"
-
