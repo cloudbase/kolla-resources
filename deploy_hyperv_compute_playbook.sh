@@ -20,3 +20,5 @@ sudo ansible-playbook -i hyperv_inventory hyperv-compute.yml \
 --extra-vars="glance_host=$CONTROLLER_ADDR neutron_host=$CONTROLLER_ADDR neutron_keystone_password=$NEUTRON_KEYSTONE_PASSWORD \
 keystone_url=$KEYSTONE_URL rabbitmq_host=$MGMT_IP rabbitmq_password=$RABBITMQ_PASSWORD vswitch_name=$VSWITCH_NAME \
 keystone_url_v2=$KEYSTONE_URL_V2 nova_keystone_password=$NOVA_KEYSTONE_PASSWORD hyperv_username=$HYPERV_USERNAME hyperv_password=$HYPERV_PASSWORD"
+
+docker restart neutron_server neutron_openvswitch_agent neutron_dhcp_agent openvswitch_vswitchd openvswitch_db
