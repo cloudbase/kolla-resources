@@ -100,6 +100,7 @@ sed -i '/vxlan_group/d' /usr/local/share/kolla/ansible/roles/neutron/templates/m
 sed -i '/tunnel_types/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
 sed -i '/l2_population/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
 sed -i '/arp_responder/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/\[agent\]/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
 
 sudo tee /etc/kolla/config/neutron/ml2_conf.ini <<-'EOF'
 [ml2]
