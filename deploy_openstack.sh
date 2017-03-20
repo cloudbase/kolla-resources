@@ -93,10 +93,18 @@ sudo sed -i '/#neutron_external_interface/i neutron_external_interface: "eth1"' 
 
 sudo mkdir -p /etc/kolla/config/neutron
 
+# remove vxlan stuff
+sed -i '/ml2_type_vxlan/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/vni_ranges/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/vxlan_group/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/tunnel_types/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/l2_population/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+sed -i '/arp_responder/d' /usr/local/share/kolla/ansible/roles/neutron/templates/ml2_conf.ini.j2
+
 sudo tee /etc/kolla/config/neutron/ml2_conf.ini <<-'EOF'
 [ml2]
-type_drivers = flat,vlan,vxlan
-tenant_network_types = vxlan,vlan
+type_drivers = flat,vlan
+tenant_network_types = flat,vlan
 mechanism_drivers = openvswitch,hyperv
 extension_drivers = port_security
 [ml2_type_vlan]
